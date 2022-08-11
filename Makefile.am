@@ -184,7 +184,10 @@ CLEANFILES = *.cmi *.cmo *.cmx *.cmt *.cmti *.o *.a stdcompat.cma \
 	stdcompat.cmxa stdcompat__native.ml dllstdcompat__stubs.so \
 	stdcompat.cmxs $(STDCOMPAT_TESTS_EXE) $(bin_SCRIPTS) .depend
 
+# as 'ocamlc -config-var ext_dll' is only available for 'ocaml >= 4.08', we need a workaround:
+EXT_DLL:=$(shell ocamlc -config | awk -F '[\t\r ]+' '/^ext_dll:/ {print $$2}')
+
 install-exec-hook :
 	$(MKDIR_P) $(DESTDIR)$(libdir)/stublibs
-	$(INSTALL_PROGRAM) dllstdcompat__stubs.so $(DESTDIR)$(libdir)/stublibs
-	echo stdcompat >$(DESTDIR)$(libdir)/stublibs/dllstdcompat__stubs.so.owner
+	$(INSTALL_PROGRAM) dllstdcompat__stubs$(EXT_DLL) $(DESTDIR)$(libdir)/stublibs
+	echo stdcompat >$(DESTDIR)$(libdir)/stublibs/dllstdcompat__stubs$(EXT_DLL).owner
